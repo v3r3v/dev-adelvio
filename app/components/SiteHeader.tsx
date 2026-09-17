@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable @next/next/no-img-element -- Static hosting uses the existing brand assets. */
+import { Brand } from "./Brand";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { useLanguage } from "../i18n/LanguageProvider";
@@ -107,16 +107,7 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
           aria-label={t("Adelvio, home")}
           onClick={() => setMenuOpen(false)}
         >
-          <span className="brand-logo-frame">
-            <img
-              className="brand-logo"
-              src={assetBase + "adelvio-logo.webp"}
-              alt="Adelvio"
-              width={2048}
-              height={768}
-              decoding="async"
-            />
-          </span>
+          <Brand assetBase={assetBase} />
         </a>
         <nav className="desktop-navigation" aria-label={t("Main navigation")}>
           {links.map(([href, label]) => (

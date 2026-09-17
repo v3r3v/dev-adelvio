@@ -15,7 +15,7 @@ export function Symbol({
   return (
     <img
       className={`brand-symbol ${className}`}
-      src={assetBase + "adelvio-symbol.webp"}
+      src={assetBase + "adelvio-new-logo.png"}
       width={512}
       height={512}
       alt=""
@@ -112,15 +112,14 @@ export function StudioHero({ assetBase }: { assetBase: string }) {
         </div>
         <div className="hero-type">
           <h1 id="hero-title">
-            {t("Good design.")}
-            <br />
-            {t("Real")} <em>{t("possibility.")}</em>
+            <span>{t("Your next chapter.")}</span>
+            <em>{t("Made digital.")}</em>
           </h1>
           <div className="hero-intro">
-            <p>{t("Website design and development for service businesses in Puerto Rico.")}</p>
+            <p>{t("Distinctive websites. Clear booking journeys. Built for your business.")}</p>
             <p>
               {t(
-                "Help people understand your services, get in touch, and take the next step. Designed and built with Jose, from the first conversation to the handoff.",
+                "An independent digital studio in Puerto Rico. Design and development with a clear purpose: helping people discover your business and take the next step.",
               )}
             </p>
             <div className="hero-actions">
@@ -135,6 +134,7 @@ export function StudioHero({ assetBase }: { assetBase: string }) {
           </div>
         </div>
         <div className="hero-stage" aria-hidden="true">
+          <div className="canvas-label"><span>{t("STUDIO CANVAS / 001")}</span><span>{t("WEBSITE + EXPERIENCE")}</span></div>
           <div className="hero-coordinate">
             {t("ADELVIO STUDIO")}
             <br />
@@ -314,6 +314,13 @@ export function SystemStory({ assetBase }: { assetBase: string }) {
                 className="system-connection connection-two"
                 aria-hidden="true"
               />
+              <div className="system-node node-booking" aria-hidden="true">
+                <span className="interface-label">{t("BOOKING / DESIGN CONCEPT")}</span>
+                <h3>{t("A simpler next step.")}</h3>
+                <div className="sample-week">{[12,13,14,15,16].map(day => <span key={day} data-active={day === 14}>{day}</span>)}</div>
+                <div className="sample-slot"><span>10:00 AM</span><Icon name="check" /></div>
+                <p>{t("Sample availability. No appointment is booked.")}</p>
+              </div>
               <div className="system-node node-inquiry">
                 <div className="node-heading">
                   <span className="node-icon">

@@ -1,4 +1,6 @@
 "use client";
+import { WorkViewControl } from "./components/WorkViewControl";
+import { Brand } from "./components/Brand";
 /* eslint-disable @next/next/no-img-element -- Shared static builds serve local assets without a Next image server. */
 import { LanguageProvider, useLanguage } from "./i18n/LanguageProvider";
 import { SiteHeader } from "./components/SiteHeader";
@@ -23,7 +25,7 @@ function HomeContent({ assetBase }: { assetBase: string }) {
   const brandSymbol = (
     <img
       className="brand-symbol"
-      src={assetBase + "adelvio-symbol.webp"}
+      src={assetBase + "adelvio-new-logo.png"}
       width={512}
       height={512}
       alt=""
@@ -32,6 +34,7 @@ function HomeContent({ assetBase }: { assetBase: string }) {
     />
   );
   const [chosen, setChosen] = useState(0);
+  const [workView, setWorkView] = useState<"desktop" | "mobile">("desktop");
   const [care, setCare] = useState(0);
   const [business, setBusiness] = useState("");
   const [goal, setGoal] = useState("");
@@ -177,7 +180,8 @@ function HomeContent({ assetBase }: { assetBase: string }) {
                   <Icon name="arrow-down-right" />
                 </span>
               </div>
-              <figure className="work-visual reveal">
+              <figure className="work-visual reveal" data-device={workView}>
+                <WorkViewControl view={workView} onChange={setWorkView} />
                 <div
                   className="concept-one"
                   aria-label={t("Editorial services website design concept")}
@@ -285,6 +289,7 @@ function HomeContent({ assetBase }: { assetBase: string }) {
             {packages.map((pack, index) => (
               <article
                 className="package reveal"
+                data-selected={chosen === index}
                 id={"package-" + pack.name.toLowerCase()}
                 key={pack.name}
               >
@@ -734,16 +739,7 @@ function HomeContent({ assetBase }: { assetBase: string }) {
       </main>
       <footer className="site-footer wrap">
         <a className="wordmark" href="#">
-          <span className="brand-logo-frame">
-            <img
-              className="brand-logo"
-              src={assetBase + "adelvio-logo.webp"}
-              alt="Adelvio"
-              width={2048}
-              height={768}
-              decoding="async"
-            />
-          </span>
+          <Brand assetBase={assetBase} />
         </a>
         <span>
           {t("Independent digital studio · Puerto Rico · By Jose Rodriguez")}
