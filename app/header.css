@@ -9,6 +9,14 @@
   background: transparent;
   box-shadow: none;
   isolation: isolate;
+  transform: translateY(0);
+  transition: transform 180ms cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+/* Move the whole surface and its blur fringe together, without shifting content.
+   Keep navigation available while a menu is open or keyboard focus is inside. */
+.site-header[data-hidden="true"]:not([data-menu-open="true"]):not(:focus-within) {
+  transform: translateY(calc(-100% - 48px));
+  pointer-events: none;
 }
 .site-header::before {
   display: none;
@@ -309,6 +317,7 @@ html[lang="es"] .chapter-copy h2 {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .site-header,
   .site-header::after,
   .header-shell,
   .header-shell::before,

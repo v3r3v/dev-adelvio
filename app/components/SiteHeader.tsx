@@ -27,22 +27,34 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
     let frame = 0;
     let maximum = 1;
     let compact = false;
+    let previousY = Math.max(0, window.scrollY);
+    let scrollingDown = false;
+    let hideAfter = 176;
     const update = () => {
       frame = 0;
-      const next = window.scrollY > 52;
+      // Clamp Safari's rubber-band scroll so bouncing at either end cannot
+      // falsely reverse the direction. No debounce: react on the next frame.
+      const y = Math.max(0, Math.min(maximum, window.scrollY));
+      if (y !== previousY) scrollingDown = y > previousY;
+      previousY = y;
+      const next = y > 52;
       if (next !== compact) {
         header.dataset.compact = String(next);
         compact = next;
       }
+      // Give the full-width header a short floating stage before dismissing it.
+      // Upward movement reveals it immediately, even far down the page.
+      header.dataset.hidden = String(y > hideAfter && scrollingDown);
       header.style.setProperty(
         "--reading-progress",
-        String(Math.max(0, Math.min(1, window.scrollY / maximum))),
+        String(y / maximum),
       );
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
     const measure = () => {
+      hideAfter = Math.max(160, header.offsetHeight * 2);
       maximum = Math.max(
         1,
         document.documentElement.scrollHeight - window.innerHeight,
@@ -60,6 +72,7 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", measure);
       delete header.dataset.material;
+      delete header.dataset.hidden;
     };
   }, []);
   useEffect(() => {
