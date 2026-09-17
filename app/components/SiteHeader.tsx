@@ -1,12 +1,12 @@
 "use client";
 import { Brand } from "./Brand";
 import { ThemeToggle } from "./ThemeToggle";
+import { advanceHeader, type HeaderScroll } from "./headerScroll";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { useLanguage } from "../i18n/LanguageProvider";
 
 const links = [
-  ["#approach", "The thinking"],
   ["#work", "The work"],
   ["#packages", "Packages"],
   ["#about", "The studio"],
@@ -27,35 +27,22 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
     header.dataset.material = apple && blur ? "glass" : "solid";
     let frame = 0;
     let maximum = 1;
-    let compact = false;
-    let previousY = Math.max(0, window.scrollY);
-    let scrollingDown = false;
-    let hideAfter = 176;
+    let timer = 0;
+    let motion: HeaderScroll = { y: Math.max(0, window.scrollY), compact: false, hidden: false, travel: 0, visibleSince: performance.now() };
     const update = () => {
       frame = 0;
-      // Clamp Safari's rubber-band scroll so bouncing at either end cannot
-      // falsely reverse the direction. No debounce: react on the next frame.
-      const y = Math.max(0, Math.min(maximum, window.scrollY));
-      if (y !== previousY) scrollingDown = y > previousY;
-      previousY = y;
-      const next = y > 52;
-      if (next !== compact) {
-        header.dataset.compact = String(next);
-        compact = next;
-      }
-      // Give the full-width header a short floating stage before dismissing it.
-      // Upward movement reveals it immediately, even far down the page.
-      header.dataset.hidden = String(y > hideAfter && scrollingDown);
-      header.style.setProperty(
-        "--reading-progress",
-        String(y / maximum),
-      );
+      const result = advanceHeader(motion, window.scrollY, maximum, performance.now());
+      motion = result.state;
+      header.dataset.compact = String(motion.compact);
+      header.dataset.hidden = String(motion.hidden);
+      window.clearTimeout(timer);
+      // One cancellable wake-up lets the floating state breathe even on a fast fling.
+      if (result.wakeAfter) timer = window.setTimeout(schedule, result.wakeAfter);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
     const measure = () => {
-      hideAfter = Math.max(160, header.offsetHeight * 2);
       maximum = Math.max(
         1,
         document.documentElement.scrollHeight - window.innerHeight,
@@ -69,6 +56,7 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
     measure();
     return () => {
       cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
       resize.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", measure);
@@ -162,7 +150,6 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
             <Icon name={menuOpen ? "minus" : "plus"} />
           </button>
         </div>
-        <span className="header-progress" aria-hidden="true" />
         <nav
           id="mobile-nav"
           className="mobile-nav"

@@ -148,7 +148,7 @@ function HomeContent({ assetBase }: { assetBase: string }) {
                 <em>{t("the difference.")}</em>
               </h2>
               <p>
-                {t("Two original studies. Different business needs. A closer look at how design makes the next step clearer.")}
+                {t("Two original concepts. Explore the design. Try the interaction.")}
               </p>
             </div>
             <article className="work-case">
@@ -162,7 +162,7 @@ function HomeContent({ assetBase }: { assetBase: string }) {
                 </h3>
                 <p>
                   {t(
-                    "An editorial approach to a service business. Clear hierarchy, considered composition, and room for the details that make it yours.",
+                    "A service website with a clear offer, a distinct identity and an easy way to get in touch.",
                   )}
                 </p>
                 <dl>
@@ -176,9 +176,6 @@ function HomeContent({ assetBase }: { assetBase: string }) {
                     <dd>{t("Original design concept")}</dd>
                   </div>
                 </dl>
-                <span className="work-direction" aria-hidden="true">
-                  <Icon name="arrow-down-right" />
-                </span>
               </div>
               <figure className="work-visual reveal" data-device={workView}>
                 <WorkViewControl view={workView} onChange={setWorkView} />

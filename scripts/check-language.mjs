@@ -43,6 +43,15 @@ try {
     const ast = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
     function visit(node) {
       if (ts.isCallExpression(node) && node.expression.getText(ast) === 't') checkTranslationArgument(node.arguments[0]);
+      // Story copy is selected by state rather than passed as a literal to t().
+      if (ts.isVariableDeclaration(node) && node.name.getText(ast) === 'chapters' && node.initializer && ts.isArrayLiteralExpression(node.initializer)) {
+        for (const chapter of node.initializer.elements) {
+          if (!ts.isObjectLiteralExpression(chapter)) continue;
+          for (const property of chapter.properties) {
+            if (ts.isPropertyAssignment(property) && property.name.getText(ast) !== 'href') checkTranslationArgument(property.initializer);
+          }
+        }
+      }
       ts.forEachChild(node, visit);
     }
     visit(ast);

@@ -29,6 +29,7 @@ jobs:
       - run: npm run test:deployment
       - run: npm run test:portal
       - run: npm run check:language
+      - run: node --experimental-strip-types --test scripts/header-scroll.test.mjs
       - run: npm run build:pages
         env:
           PAGES_REPOSITORY: ${{ github.repository }}

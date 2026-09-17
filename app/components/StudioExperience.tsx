@@ -3,7 +3,6 @@
 import { useLanguage } from "../i18n/LanguageProvider";
 import { Icon } from "./Icon";
 import { useState } from "react";
-import { PINNED_MOTION_QUERY, useScrollScene } from "./useScrollScene";
 
 export function Symbol({
   assetBase,
@@ -100,15 +99,14 @@ export function ProductWindow({ assetBase }: { assetBase: string }) {
 
 export function StudioHero({ assetBase }: { assetBase: string }) {
   const { t } = useLanguage();
-  const ref = useScrollScene<HTMLElement>();
   return (
-    <section className="studio-hero" ref={ref} aria-labelledby="hero-title">
+    <section className="studio-hero" aria-labelledby="hero-title">
       <div className="wrap hero-editorial">
         <div className="hero-studio-line">
           <p className="eyebrow">
             <span className="blue-dot" /> {t("INDEPENDENT DIGITAL STUDIO")}
           </p>
-          <span>{t("PUERTO RICO / BUILT WITH INTENTION")}</span>
+          
         </div>
         <div className="hero-type">
           <h1 id="hero-title">
@@ -116,12 +114,7 @@ export function StudioHero({ assetBase }: { assetBase: string }) {
             <em>{t("Made digital.")}</em>
           </h1>
           <div className="hero-intro">
-            <p>{t("Distinctive websites. Clear booking journeys. Built for your business.")}</p>
-            <p>
-              {t(
-                "An independent digital studio in Puerto Rico. Design and development with a clear purpose: helping people discover your business and take the next step.",
-              )}
-            </p>
+            <p>{t("Websites and digital experiences, designed around your business.")}</p>
             <div className="hero-actions">
             <a className="button blue" href="#project">{t("Tell me about your business")} <Icon /></a>
             <a className="text-link" href="#work">
@@ -134,35 +127,8 @@ export function StudioHero({ assetBase }: { assetBase: string }) {
           </div>
         </div>
         <div className="hero-stage" aria-hidden="true">
-          <div className="canvas-label"><span>{t("STUDIO CANVAS / 001")}</span><span>{t("WEBSITE + EXPERIENCE")}</span></div>
-          <div className="hero-coordinate">
-            {t("ADELVIO STUDIO")}
-            <br />
-            {t("DESIGN × ENGINEERING")}
-            <span>{t("01 — EXPLORE")}</span>
-          </div>
-          <div className="hero-stage-grid" />
           <div className="hero-window">
             <ProductWindow assetBase={assetBase} />
-          </div>
-          <div className="hero-note-interface">
-            <span className="interface-label">
-              {t("THE NEXT STEP, SIMPLIFIED")}
-            </span>
-            <div className="note-message">
-              <span className="note-icon" aria-hidden="true">
-                <Icon name="arrow-up-right" />
-              </span>
-              <div>
-                <b>{t("A new inquiry.")}</b>
-                <span>{t("A conversation waiting to happen.")}</span>
-              </div>
-            </div>
-            <div className="note-route">
-              <span>{t("Website")}</span>
-              <i aria-hidden="true" />
-              <span>{t("Your inbox")}</span>
-            </div>
           </div>
           <div className="hero-mobile">
             <span className="mobile-ear" />
@@ -184,11 +150,6 @@ export function StudioHero({ assetBase }: { assetBase: string }) {
               </span>
             </div>
           </div>
-          <div className="hero-axis" aria-hidden="true">
-            <span>{t("IDEA")}</span>
-            <i />
-            <span>{t("EXPERIENCE")}</span>
-          </div>
         </div>
         <div className="hero-baseline">
           <span>{t("INTERFACE EXPLORATIONS — NOT CLIENT WORK")}</span>
@@ -198,13 +159,7 @@ export function StudioHero({ assetBase }: { assetBase: string }) {
               <Icon name="arrow-down" />
             </span>
           </a>
-          <span>{t("DESIGNED HERE. READY FOR WHAT’S NEXT.")}</span>
         </div>
-      </div>
-      <div className="studio-promise wrap">
-        <a className="studio-person" href="#about"><img src={assetBase + "profile_image.jpg"} width={52} height={52} alt="" loading="lazy" /><span><b>Jose Rodriguez</b><small>{t("Your direct design & development contact")}</small></span><Icon /></a>
-        <p>{t("A small studio. A direct conversation.")}</p>
-        <a className="text-link" href="#packages">{t("Clear scope. Published prices.")} <Icon name="arrow-down" /></a>
       </div>
     </section>
   );
@@ -214,7 +169,7 @@ const chapters = [
   {
     label: "Make an impression",
     title: "A first impression.\nA lasting connection.",
-    body: "Make what you do easy to understand and hard to forget. Start with a thoughtfully designed website, built around your business and the people who use it.",
+    body: "A distinctive website that makes your services clear and your business easy to contact.",
     detail: "WEBSITE DESIGN & DEVELOPMENT",
     link: "Explore website packages",
     href: "#packages",
@@ -222,7 +177,7 @@ const chapters = [
   {
     label: "Make the next step easy",
     title: "Less friction.\nMore connection.",
-    body: "Move naturally from interest to action. Clear contact paths and supported booking tools help people take the next step, without having to figure it out themselves.",
+    body: "Turn interest into a clear next step with contact paths and supported booking tools.",
     detail: "CONTACT FLOWS & BOOKING SETUP",
     link: "Explore Appointments",
     href: "#package-appointments",
@@ -230,7 +185,7 @@ const chapters = [
   {
     label: "Think beyond the page",
     title: "A bigger picture.\nBuilt around you.",
-    body: "An online store. A connected workflow. A tool for the way your business works. When your idea goes beyond a website, start with a conversation and a separate scope.",
+    body: "Need an online store, connected workflow or custom tool? Let’s define a separate scope around your idea.",
     detail: "CUSTOM APPLICATIONS & INTEGRATIONS / SEPARATE SCOPE",
     link: "Discuss your idea",
     href: "mailto:jose.rodriguez.velez@gmail.com?subject=Adelvio%20%E2%80%94%20Custom%20project%20inquiry",
@@ -240,28 +195,12 @@ const chapters = [
 export function SystemStory({ assetBase }: { assetBase: string }) {
   const { t } = useLanguage();
   const [stage, setStage] = useState(0);
-  const ref = useScrollScene<HTMLElement>(true, (p) =>
-    setStage(Math.min(2, Math.floor(p * 3))),
-  );
   const current = chapters[stage];
-  function choose(index: number) {
-    setStage(index);
-    if (window.matchMedia(PINNED_MOTION_QUERY).matches && ref.current) {
-      const top = ref.current.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({
-        top:
-          top +
-          (ref.current.offsetHeight - window.innerHeight) *
-            ((index + 0.15) / 3),
-        behavior: "instant",
-      });
-    }
-  }
+  function choose(index: number) { setStage(index); }
   return (
     <section
       className="system-story"
       id="approach"
-      ref={ref}
       data-stage={stage}
       aria-labelledby="systems-title"
     >
@@ -269,7 +208,7 @@ export function SystemStory({ assetBase }: { assetBase: string }) {
         <div className="wrap">
           <div className="system-topline">
             <p className="eyebrow">{t("01 / A CONNECTED WAY OF THINKING")}</p>
-            <span>{t("DESIGN IS THE START. POSSIBILITY IS THE POINT.")}</span>
+
           </div>
           <div className="system-layout">
             <div className="system-copy">
@@ -286,7 +225,7 @@ export function SystemStory({ assetBase }: { assetBase: string }) {
                     ))}
                 </h2>
                 <p>{t(current.body)}</p>
-                <span className="chapter-detail">{t(current.detail)}</span>
+
                 <a className="text-link" href={current.href.startsWith('mailto:') ? 'mailto:jose.rodriguez.velez@gmail.com?subject='+encodeURIComponent('Adelvio — '+t('Custom project inquiry')) : current.href}>
                   {t(current.link)}
                   <span aria-hidden="true">

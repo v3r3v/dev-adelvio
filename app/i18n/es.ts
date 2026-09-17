@@ -1,4 +1,10 @@
 export const spanish: Record<string, string> = {
+  "Websites and digital experiences, designed around your business.": "Sitios web y experiencias digitales pensados para tu negocio.",
+  "A distinctive website that makes your services clear and your business easy to contact.": "Una web con identidad que presenta tus servicios y facilita el contacto.",
+  "Turn interest into a clear next step with contact paths and supported booking tools.": "Del interés al contacto, con un camino claro y herramientas de citas compatibles.",
+  "Need an online store, connected workflow or custom tool? Let’s define a separate scope around your idea.": "¿Una tienda en línea, un flujo conectado o una herramienta a medida? Definamos un alcance aparte para tu idea.",
+  "Two original concepts. Explore the design. Try the interaction.": "Dos conceptos originales. Explora el diseño. Prueba la interacción.",
+  "A service website with a clear offer, a distinct identity and an easy way to get in touch.": "Una web de servicios con una oferta clara, identidad propia y contacto sencillo.",
   "Switch to light theme": "Cambiar a tema claro",
   "Switch to dark theme": "Cambiar a tema oscuro",
   "Website design and development for service businesses in Puerto Rico.": "Diseño y desarrollo web para negocios de servicios en Puerto Rico.",
