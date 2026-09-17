@@ -13,8 +13,8 @@
   transition: transform 180ms cubic-bezier(0.2, 0.75, 0.2, 1);
 }
 /* Move the whole surface and its blur fringe together, without shifting content.
-   Keep navigation available while a menu is open or keyboard focus is inside. */
-.site-header[data-hidden="true"]:not([data-menu-open="true"]):not(:focus-within) {
+   Only keyboard-visible focus pins it: a pointer click can retain focus while scrolling. */
+.site-header[data-hidden="true"]:not([data-menu-open="true"]):not([data-keyboard-focus="true"]) {
   transform: translateY(calc(-100% - 48px));
   pointer-events: none;
 }

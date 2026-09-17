@@ -9,3 +9,11 @@ The homepage now leads with one description and two device previews. Repeated he
 Checks: header regression tests (fast flings, direction reversal, small scroll changes, overscroll); language dictionary checks including dynamically selected story copy; icon check; TypeScript; targeted ESLint; Pages build. Chrome inspection at 320, 390, 768 and 1440px covered navigation fit, hide/reveal states and timings, light/dark appearance, artwork/caption spacing, menu/Escape behavior and manual stage selection. Corrected mobile artwork overlap and a Spanish story translation during review. Physical iPhone/Safari and OS reduced-motion emulation were not performed.
 
 Publication target: dev-adelvio only.
+
+## Retained focus regression
+
+Reproduced after clicking the theme toggle and scrolling: `data-hidden` correctly became `true`, but `:focus-within` kept the transform at zero. The clicked button retained DOM focus. This also affected language controls. A `:focus-visible`-only fix was insufficient when switching from keyboard navigation to clicking the already-focused button.
+
+The header now tracks keyboard versus pointer input and protects focused controls only during keyboard interaction. Native focus is preserved; no forced blur is used. Document and header listeners are removed on unmount. The separate open-menu protection remains.
+
+Verified in Chrome: light-to-dark and dark-to-light followed by scrolling without reloading; 390px mobile layout; language clicking after Tab navigation; Tab revealing a hidden header immediately; open menu staying visible during downward scroll; Escape closing the menu and restoring keyboard focus. Header state tests, Pages build, TypeScript and targeted ESLint pass. Physical touch-device testing remains pending.

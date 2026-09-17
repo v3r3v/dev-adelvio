@@ -25,6 +25,26 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
     const apple = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
     const blur = CSS.supports("backdrop-filter", "blur(1px)") || CSS.supports("-webkit-backdrop-filter", "blur(1px)");
     header.dataset.material = apple && blur ? "glass" : "solid";
+    // Clicking a button can retain DOM focus (and even :focus-visible after
+    // keyboard use). Pin navigation only while the visitor is using a keyboard.
+    let keyboard = header.matches(":has(:focus-visible)");
+    const syncFocus = () => {
+      header.dataset.keyboardFocus = String(keyboard && header.contains(document.activeElement));
+    };
+    const pointer = () => { keyboard = false; syncFocus(); };
+    const key = (event: KeyboardEvent) => {
+      if (["Shift", "Control", "Alt", "Meta"].includes(event.key)) return;
+      keyboard = true;
+      syncFocus();
+    };
+    const focusOut = (event: FocusEvent) => {
+      header.dataset.keyboardFocus = String(keyboard && event.relatedTarget instanceof Node && header.contains(event.relatedTarget));
+    };
+    document.addEventListener("pointerdown", pointer, true);
+    document.addEventListener("keydown", key, true);
+    header.addEventListener("focusin", syncFocus);
+    header.addEventListener("focusout", focusOut);
+    syncFocus();
     let frame = 0;
     let maximum = 1;
     let timer = 0;
@@ -60,6 +80,11 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
       resize.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", measure);
+      document.removeEventListener("pointerdown", pointer, true);
+      document.removeEventListener("keydown", key, true);
+      header.removeEventListener("focusin", syncFocus);
+      header.removeEventListener("focusout", focusOut);
+      delete header.dataset.keyboardFocus;
       delete header.dataset.material;
       delete header.dataset.hidden;
     };

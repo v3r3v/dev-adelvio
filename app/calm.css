@@ -3,12 +3,12 @@
   max-width: 1080px;
   transition: transform 360ms cubic-bezier(.22,.68,.2,1);
 }
-.site-header[data-hidden="true"]:not([data-menu-open="true"]):not(:focus-within) {
+.site-header[data-hidden="true"]:not([data-menu-open="true"]):not([data-keyboard-focus="true"]) {
   transform: translateY(calc(-100% - 28px));
   transition-duration: 520ms;
   transition-timing-function: cubic-bezier(.4,0,.2,1);
 }
-.site-header:focus-within { transition-duration: 0ms; }
+.site-header[data-keyboard-focus="true"] { transition-duration: 0ms; }
 .header-shell { transition: transform 420ms cubic-bezier(.22,.68,.2,1); }
 .header-shell::before { transition: transform 420ms cubic-bezier(.22,.68,.2,1),border-radius 420ms,box-shadow 420ms; }
 .site-header[data-compact="true"] .header-shell::before {
