@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       publish_preview:
-        description: 'Publish this branch to v3r3v.github.io/adelvio only (never adelvio.com)'
+        description: 'Publish this branch to this repository’s GitHub Pages preview only (never adelvio.com)'
         type: boolean
         required: true
         default: false
@@ -30,6 +30,8 @@ jobs:
       - run: npm run test:portal
       - run: npm run check:language
       - run: npm run build:pages
+        env:
+          PAGES_REPOSITORY: ${{ github.repository }}
       - uses: actions/upload-pages-artifact@v4
         if: github.event_name == 'workflow_dispatch' && inputs.publish_preview
         with:
