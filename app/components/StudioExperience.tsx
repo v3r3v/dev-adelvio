@@ -3,7 +3,6 @@
 import { useLanguage } from "../i18n/LanguageProvider";
 import { Icon } from "./Icon";
 import { useState } from "react";
-
 export function Symbol({
   assetBase,
   className = "",
