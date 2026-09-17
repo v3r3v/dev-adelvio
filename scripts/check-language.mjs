@@ -39,7 +39,7 @@ try {
     }
   }
   // Every literal translation call must be backed by the dictionary.
-  for (const file of ['app/page.tsx', 'app/components/SiteHeader.tsx', 'app/components/StudioExperience.tsx', 'app/components/StudioRefinements.tsx', 'app/components/WorkViewControl.tsx']) {
+  for (const file of ['app/page.tsx', 'app/components/SiteHeader.tsx', 'app/components/ThemeToggle.tsx', 'app/components/StudioExperience.tsx', 'app/components/StudioRefinements.tsx', 'app/components/WorkViewControl.tsx']) {
     const ast = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
     function visit(node) {
       if (ts.isCallExpression(node) && node.expression.getText(ast) === 't') checkTranslationArgument(node.arguments[0]);

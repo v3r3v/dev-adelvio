@@ -1,5 +1,6 @@
 "use client";
 import { Brand } from "./Brand";
+import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { useLanguage } from "../i18n/LanguageProvider";
@@ -123,6 +124,7 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
           </a>
         </nav>
         <div className="header-tools">
+          <ThemeToggle />
           <div
             className="language-switch"
             role="group"
@@ -153,6 +155,7 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
             className="menu-toggle"
             aria-expanded={menuOpen}
             aria-controls="mobile-nav"
+            aria-label={t(menuOpen ? "Close" : "Menu")}
             onClick={() => setMenuOpen(!menuOpen)}
           >
             <span>{t(menuOpen ? "Close" : "Menu")}</span>

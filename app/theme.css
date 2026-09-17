@@ -1,0 +1,59 @@
+/* Appearance is a visitor choice; the default palette remains light. */
+:root { color-scheme: light; }
+.theme-toggle {
+  display: grid; place-items: center; flex: none; width: 44px; height: 44px;
+  padding: 0; border: 1px solid var(--line); border-radius: 50%;
+  color: var(--ink); background: var(--paper); cursor: pointer;
+  transition: border-color 180ms, color 180ms, transform 180ms;
+}
+.theme-toggle .ui-icon { width: 20px; height: 20px; }
+.theme-toggle:hover { border-color: var(--blue); color: var(--blue); transform: rotate(-12deg); }
+.theme-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+.header-tools { flex-shrink: 0; gap: 12px; }
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #141b24; --ink: #f0f2f4; --muted: #b2bdca; --line: #374454;
+  --blue: #91b2ff; --dark: #101720; --studio-soft: #202d3f;
+}
+html[data-theme="dark"] .hero-stage { border-color: var(--line); }
+html[data-theme="dark"] .canvas-label { color: var(--muted); }
+html[data-theme="dark"] .hero-note-interface { border-color: #4b607a; }
+html[data-theme="dark"] .system-story { color: #f0f2f4; }
+html[data-theme="dark"] .work-section { background: #1a252b; }
+html[data-theme="dark"] :is(.work-heading .eyebrow,.work-heading>p:last-child,.work-index,.work-case-copy>p,.work-case-copy dt,.work-visual figcaption,.booking-case-caption p,.concept-notes-hint,.concept-notes-body p:not(.eyebrow),.cost-guide li p,.muted-heading) { color: var(--muted); }
+html[data-theme="dark"] :is(.work-direction,.work-view-control,.concept-notes summary>.ui-icon,.cost-guide-heading em) { color: #b8ccb8; }
+html[data-theme="dark"] .work-view-control button { color: var(--ink); }
+html[data-theme="dark"] .work-view-control button[aria-pressed="true"] { background: #c0d6c2; color: #182b22; }
+html[data-theme="dark"] .package[data-selected="true"] { background: #202e43; }
+html[data-theme="dark"] .process-section { background: #202c3b; }
+html[data-theme="dark"] :is(.process-title>p,.process-step p,.process-section .eyebrow) { color: #bac8da; }
+html[data-theme="dark"] .process-title h2>span { color: #acc5e8; }
+html[data-theme="dark"] .process-step { border-color: #4b607a; }
+/* Blue buttons retain sufficient contrast; links use the lighter accent token. */
+html[data-theme="dark"] :is(.button.blue,.site-header .small-cta:hover,.care-row>a:hover) { background: #174bfa; color: white; }
+html[data-theme="dark"] .button.paper:hover { background: #2b3a50; }
+html[data-theme="dark"] .skip-link { color: var(--paper); }
+html[data-theme="dark"] .language-switch button[aria-pressed="true"]:hover { background: #174bfa; }
+html[data-theme="dark"] .site-header[data-compact="true"] .header-shell::before { background: #141b24f2; box-shadow: 0 12px 28px #0003; }
+html[data-theme="dark"] .site-header[data-material="glass"][data-compact="true"] .header-shell::before { background: linear-gradient(135deg,#243246f2,#141b24e8); }
+html[data-theme="dark"] .site-header[data-material="glass"] .language-switch { background: #1c293bcc; border-color: var(--line); }
+/* Miniature products are authored examples with their own palette, not page chrome. */
+html[data-theme="dark"] :is(.product-window,.system-node,.concept-one,.folio-mobile-preview,.interactive-phone) {
+  color-scheme: light; --paper: #f6f5ef; --ink: #202425; --muted: #60686b; --blue: #174bfa; --line: #d4d8d6;
+}
+html[data-theme="dark"] .concept-one { color: #293a30; }
+@media (max-width: 760px) {
+  .site-header .header-tools { gap: 8px; }
+  .header-tools .menu-toggle { width: 44px; justify-content: center; }
+  /* The button retains its translated accessible name. */
+  .header-tools .menu-toggle>span { display: none; }
+}
+@media (max-width: 360px) {
+  .site-header .brand-lockup { gap: 4px; }
+  .site-header .brand-lockup img { width: 28px; height: 28px; }
+  .site-header .brand-lockup>span { display: none; }
+  .site-header .header-tools { gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { .theme-toggle { transition: none; } .theme-toggle:hover { transform: none; } }
+@media (forced-colors: active) { .theme-toggle { border-color: ButtonText; } }

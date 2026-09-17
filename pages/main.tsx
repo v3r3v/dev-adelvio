@@ -8,6 +8,7 @@ import '../app/experience.css';
 import '../app/header.css';
 import '../app/refinement.css';
 import '../app/canvas.css';
+import '../app/theme.css';
 
 const root = document.getElementById('root')!;
 const page = <Home assetBase={import.meta.env.BASE_URL}/>;

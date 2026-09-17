@@ -1,4 +1,6 @@
 export const spanish: Record<string, string> = {
+  "Switch to light theme": "Cambiar a tema claro",
+  "Switch to dark theme": "Cambiar a tema oscuro",
   "Website design and development for service businesses in Puerto Rico.": "Diseño y desarrollo web para negocios de servicios en Puerto Rico.",
   "Help people understand your services, get in touch, and take the next step. Designed and built with Jose, from the first conversation to the handoff.": "Ayuda a tus clientes a conocer tus servicios, contactarte y dar el próximo paso. Con Jose, desde la primera conversación hasta la entrega.",
   "Tell me about your business": "Cuéntame de tu negocio",

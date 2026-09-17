@@ -6,6 +6,7 @@ import './experience.css';
 import './header.css';
 import './refinement.css';
 import './canvas.css';
+import './theme.css';
 
 
 export const metadata: Metadata = {
@@ -23,7 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        {/* Tiny synchronous preference bootstrap prevents a light flash on saved dark visits. */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="/theme-init.js" />
+      </head>
       <body
         className="studio-site"
       >
