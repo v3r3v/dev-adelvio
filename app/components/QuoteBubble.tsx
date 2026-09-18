@@ -8,6 +8,5 @@ export function QuoteBubble({ assetBase }: { assetBase: string }) {
   return <a className="quote-bubble" href={links.project} aria-label={t("Get a quote")}>
     <span className="quote-bubble-icon"><Icon name="message" /></span>
     <span>{t("Get a quote")}</span>
-    <Icon />
   </a>;
 }

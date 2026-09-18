@@ -41,13 +41,16 @@
 .public-footer nav a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 12px; }
 .quote-bubble {
   position: fixed; right: max(24px,env(safe-area-inset-right)); bottom: max(24px,env(safe-area-inset-bottom)); z-index: 45;
-  display: inline-flex; align-items: center; gap: 12px; min-height: 58px; padding: 10px 18px 10px 12px;
-  color: white; background: #174bfa; border: 1px solid #ffffff38; border-radius: 24px 24px 6px 24px;
-  box-shadow: 0 6px 22px #071a5824; font-size: 13px; transition: background 160ms,transform 160ms;
+  display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 11px 17px;
+  color: white; background: #174bfa; border: 1px solid #ffffff60; border-radius: 28px 28px 12px 28px;
+  isolation: isolate; box-shadow: inset 0 1px 0 #ffffff24,0 4px 12px #071a5820;
+  font-size: 13px; font-weight: 500; transition: background 180ms,transform 180ms;
 }
-.quote-bubble-icon { display: grid; place-items: center; width: 32px; height: 32px; }
-.quote-bubble>.ui-icon { width: 17px; height: 17px; }
-.quote-bubble:hover { background: #123bc6; transform: translateY(-2px); }
+.quote-bubble::before { content: ""; position: absolute; inset: -2px; border-radius: inherit; z-index: -1; pointer-events: none; box-shadow: 0 0 16px #245bff66,0 0 32px #245bff30; opacity: .8; transition: opacity 180ms; }
+.quote-bubble-icon { display: grid; place-items: center; width: 19px; height: 19px; }
+.quote-bubble-icon .ui-icon { width: 19px; height: 19px; }
+.quote-bubble:hover { background: #123bc6; transform: translateY(-1px); }
+.quote-bubble:hover::before,.quote-bubble:focus-visible::before { opacity: 1; }
 .quote-bubble:focus-visible { outline: 3px solid var(--ink); outline-offset: 5px; }
 .contact-page { border-top: 0; min-height: 75vh; padding-top: 75px; }
 .contact-page .founder-copy h1 { font-size: clamp(42px,4.8vw,68px); font-weight: 400; line-height: 1.06; letter-spacing: -.05em; margin: 0 0 27px; }
@@ -82,8 +85,7 @@
   .showcase-finale { padding-block: 65px; }
   .public-footer { padding-bottom: 110px; }
   .public-footer nav { grid-column: 1/-1; gap: 24px; }
-  .quote-bubble { right: 16px; bottom: max(16px,env(safe-area-inset-bottom)); min-height: 52px; padding: 8px 14px 8px 10px; gap: 8px; font-size: 12px; }
-  .quote-bubble-icon { width: 26px; }
+  .quote-bubble { right: 16px; bottom: max(16px,env(safe-area-inset-bottom)); min-height: 48px; padding: 11px 15px; gap: 8px; font-size: 12px; }
   .contact-page { grid-template-columns: 1fr; gap: 32px; padding-top: 40px; }
   .contact-page .founder-portrait { max-width: 300px; }
   .contact-page .founder-copy h1 { font-size: 43px; }
@@ -100,5 +102,5 @@
   .site-header[data-hidden] .header-shell::before { opacity: 1 !important; }
   .site-header[data-hidden] :is(.header-brand,.header-controls)::before { opacity: 0 !important; transition: none !important; }
   .site-header[data-hidden] .header-brand .brand-lockup>span { opacity: 1 !important; transition: none !important; }
-  .quote-bubble { transition: none; } .quote-bubble:hover { transform: none; }
+  .quote-bubble,.quote-bubble::before { transition: none; } .quote-bubble:hover { transform: none; }
 }
