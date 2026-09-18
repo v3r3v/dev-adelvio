@@ -15,14 +15,16 @@ The form prepares an email draft addressed to Jose. The visitor must review and 
 
 ## Header motion
 
-After the stationary-to-floating transition, downward scroll travel beyond 180px closes the visible header height, one pixel per scroll pixel. Upward travel restores the same height immediately. A centered clip closes to a flat line without distorting the logo or text. No timed hide tween continues after scrolling stops, and document layout remains stable.
+After the stationary-to-floating transition, continued downward travel separates the header. Only the Adelvio symbol remains in a circular home-link badge near the left edge; the name fades out and the controls slide upward independently. Upward travel reunites the header. This replaces the previous proportional height/flat-line animation.
 
-Open menus and keyboard navigation keep the header visible. Pointer interaction, including theme switching, does not pin it. Reduced-motion preferences keep the header visible. Scroll listeners, animation frames, resize observation, and focus listeners are cleaned up on unmount.
+The scroll model waits for 56px of downward intent beyond 180px, and reveals after 4px upward to ignore tiny wheel/touch jitter. Reversible CSS transitions use transforms and opacity (520ms departure, 420ms return). The header retains its layout footprint. Brand docking geometry is measured on resize, not in the scroll handler.
+
+Open menus and keyboard navigation keep the header visible. Pointer interaction, including theme switching, does not pin it. Changing from keyboard to pointer resets directional intent so controls cannot move between pointerdown and click. Reduced-motion preferences keep the full header visible. Scroll listeners, animation frames, resize observation, and focus listeners are cleaned up on unmount.
 
 ## Verification
 
 - TypeScript, targeted lint, icon/language checks, Pages build, scroll-state tests, and prerendered-route tests.
 - Chrome visual inspection at desktop, tablet, and mobile widths; 320px overflow checks across all three routes.
 - Quote and menu navigation; Spanish/English links; light/dark styling; native required-field validation; downloaded inquiry using demo data.
-- Measured a partial close of 45px at scroll position 225px. Scrolling upward 27px restored 27px (18px remained closed), with no further change at rest. Full closure and keyboard reveal were verified.
+- Split-header follow-up: directional intent, reversal and overscroll unit tests; desktop and 390px Chrome review; detached symbol/name visibility, restored controls, theme switching, menu scrolling and Escape-to-pointer interaction verified. The detached symbol docks at 32px on desktop and retains the 20px mobile gutter.
 - No email was sent. Physical iPhone/Safari and Android testing were not performed. No new Lighthouse score is claimed.

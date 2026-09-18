@@ -28,7 +28,17 @@ export function SiteHeader({ assetBase, page = "home" }: { assetBase: string; pa
     const syncFocus = () => {
       header.dataset.keyboardFocus = String(keyboard && header.contains(document.activeElement));
     };
-    const pointer = () => { keyboard = false; syncFocus(); };
+    const pointer = (event: PointerEvent) => {
+      // Switching from keyboard to pointer must not move the clicked control
+      // between pointerdown and click. New downward travel can hide it again.
+      if (event.target instanceof Node && header.contains(event.target) &&
+          (keyboard || header.querySelector(".header-controls")?.contains(event.target))) {
+        motion = { ...motion, hidden: false, travel: 0 };
+        header.dataset.hidden = "false";
+      }
+      keyboard = false;
+      syncFocus();
+    };
     const key = (event: KeyboardEvent) => {
       if (["Shift", "Control", "Alt", "Meta"].includes(event.key)) return;
       keyboard = true;
@@ -44,20 +54,21 @@ export function SiteHeader({ assetBase, page = "home" }: { assetBase: string; pa
     syncFocus();
     let frame = 0;
     let maximum = 1;
-    let height = 88;
-    let motion: HeaderScroll = { y: Math.max(0, window.scrollY), closed: 0 };
+    let motion: HeaderScroll = { y: Math.max(0, window.scrollY), travel: 0, hidden: false };
     const update = () => {
       frame = 0;
-      motion = advanceHeader(motion, window.scrollY, maximum, height);
+      motion = advanceHeader(motion, window.scrollY, maximum);
       header.dataset.compact = String(motion.y > 52);
-      header.dataset.hidden = String(motion.closed >= height);
-      header.style.setProperty("--nav-close", `${motion.closed}px`);
+      header.dataset.hidden = String(motion.hidden);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
     const measure = () => {
-      height = header.offsetHeight;
+      // Dock the brand near the viewport edge without changing layout or
+      // reading geometry in the scroll handler. Small screens retain their gutter.
+      const edge = window.innerWidth <= 760 ? 20 : 32;
+      header.style.setProperty("--brand-dock-x", `${Math.min(0, edge - header.getBoundingClientRect().left)}px`);
       maximum = Math.max(
         1,
         document.documentElement.scrollHeight - window.innerHeight,
@@ -81,7 +92,7 @@ export function SiteHeader({ assetBase, page = "home" }: { assetBase: string; pa
       delete header.dataset.keyboardFocus;
       delete header.dataset.material;
       delete header.dataset.hidden;
-      header.style.removeProperty("--nav-close");
+      header.style.removeProperty("--brand-dock-x");
     };
   }, []);
   useEffect(() => {
@@ -111,13 +122,14 @@ export function SiteHeader({ assetBase, page = "home" }: { assetBase: string; pa
     <header ref={ref} className="site-header wrap" data-menu-open={menuOpen}>
       <div className="header-shell">
         <a
-          className="wordmark"
+          className="wordmark header-brand"
           href={routes.home}
           aria-label={t("Adelvio, home")}
           onClick={() => setMenuOpen(false)}
         >
           <Brand assetBase={assetBase} />
         </a>
+        <div className="header-controls">
         <nav className="desktop-navigation" aria-label={t("Main navigation")}>
           {links.map(([href, label]) => (
             <a href={href} key={href} aria-current={page === "contact" && href === routes.contact ? "page" : undefined}>
@@ -169,6 +181,7 @@ export function SiteHeader({ assetBase, page = "home" }: { assetBase: string; pa
             <span>{t(menuOpen ? "Close" : "Menu")}</span>
             <Icon name={menuOpen ? "minus" : "plus"} />
           </button>
+        </div>
         </div>
         <nav
           id="mobile-nav"
