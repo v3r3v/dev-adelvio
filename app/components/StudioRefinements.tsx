@@ -2,10 +2,12 @@
 import { useLanguage } from "../i18n/LanguageProvider";
 import { Icon } from "./Icon";
 import { packages, carePlans, money } from "../offerings";
+import { useSiteLinks } from "./siteLinks";
 
 /** Expandable context for the existing original studies, never client case studies. */
-export function ConceptNotes({ booking = false }: { booking?: boolean }) {
+export function ConceptNotes({ booking = false, assetBase = "/" }: { booking?: boolean; assetBase?: string }) {
   const { t } = useLanguage();
+  const links = useSiteLinks(assetBase);
   return (
     <details className="concept-notes">
       <summary>
@@ -29,8 +31,8 @@ export function ConceptNotes({ booking = false }: { booking?: boolean }) {
           <p className="concept-limit">{t(booking
             ? "A production project connects one supported booking provider. This concept does not book appointments or represent a custom scheduling platform."
             : "Scope shown: visual direction, service introduction, and a responsive interface concept. No client engagement or business results are implied.")}</p>
-          <a className="text-link" href={booking ? "#package-appointments" : "#packages"}>
-            {t(booking ? "See the Appointments scope" : "Find a starting package")} <Icon />
+          <a className="text-link" href={links.project}>
+            {t("Discuss your idea")} <Icon />
           </a>
         </div>
       </div>

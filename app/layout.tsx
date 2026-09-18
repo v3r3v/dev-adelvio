@@ -8,6 +8,7 @@ import './refinement.css';
 import './canvas.css';
 import './theme.css';
 import './calm.css';
+import './public-pages.css';
 
 
 export const metadata: Metadata = {

@@ -1,31 +1,24 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { advanceHeader } from '../app/components/headerScroll.ts';
-
-const initial = { y: 0, compact: false, hidden: false, travel: 0, visibleSince: 0 };
-test('a fast fling passes through a visible floating stage before hiding', () => {
-  const floating = advanceHeader(initial, 100, 3000, 0).state;
-  const fling = advanceHeader(floating, 500, 3000, 40);
-  assert.equal(fling.state.hidden, false);
-  assert.equal(fling.wakeAfter, 380);
-  assert.equal(advanceHeader(fling.state, 500, 3000, 420).state.hidden, true);
-  const singleJump = advanceHeader(initial, 500, 3000, 0);
-  assert.equal(singleJump.wakeAfter, 420);
-  assert.equal(advanceHeader(singleJump.state, 500, 3000, 420).state.hidden, true);
+const initial = { y: 0, closed: 0 };
+test('stationary, floating, then one-to-one height closure', () => {
+  assert.equal(advanceHeader(initial, 100, 3000, 88).closed, 0);
+  const half = advanceHeader(initial, 224, 3000, 88);
+  assert.equal(half.closed, 44);
+  assert.equal(advanceHeader(half, 234, 3000, 88).closed, 54);
+  assert.equal(advanceHeader(half, 224, 3000, 88).closed, 44);
 });
-test('upward scroll reveals immediately, and small reversals do not dismiss it', () => {
-  const hidden = { ...initial, y: 600, compact: true, hidden: true, travel: 400 };
-  const revealed = advanceHeader(hidden, 599, 3000, 800).state;
-  assert.equal(revealed.hidden, false);
-  assert.equal(advanceHeader(revealed, 607, 3000, 1500).state.hidden, false);
-  assert.equal(advanceHeader(revealed, 660, 3000, 900).state.hidden, false);
-  assert.equal(advanceHeader(revealed, 660, 3000, 1220).state.hidden, true);
+test('upward travel reverses closure by exactly the same distance', () => {
+  const closed = advanceHeader(initial, 600, 3000, 88);
+  assert.equal(closed.closed, 88);
+  const reopened = advanceHeader(closed, 578, 3000, 88);
+  assert.equal(reopened.closed, 66);
+  assert.equal(advanceHeader(reopened, 588, 3000, 88).closed, 76);
+  assert.equal(advanceHeader(reopened, 512, 3000, 88).closed, 0);
 });
-test('top reset and rubber-band overscroll are clamped', () => {
-  const state = { ...initial, y: 3000, compact: true, hidden: true, travel: 500 };
-  assert.equal(advanceHeader(state, 3100, 3000, 1000).state.y, 3000);
-  const reset = advanceHeader(state, -30, 3000, 1000).state;
-  assert.equal(reset.y, 0);
-  assert.equal(reset.compact, false);
-  assert.equal(reset.hidden, false);
+test('mobile height, viewport limits and overscroll are clamped', () => {
+  assert.equal(advanceHeader(initial, 700, 3000, 76).closed, 76);
+  assert.deepEqual(advanceHeader({y:3000,closed:88}, 3100, 3000, 88), {y:3000,closed:88});
+  assert.deepEqual(advanceHeader({y:200,closed:20}, -30, 3000, 88), initial);
 });

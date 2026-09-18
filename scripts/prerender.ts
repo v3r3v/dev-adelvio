@@ -25,10 +25,18 @@ export function prerenderHome(): Plugin {
       });
       try {
         const {default: Home} = await renderer.ssrLoadModule('/app/page.tsx');
-        const markup = renderToString(createElement(Home, {assetBase: config.base}));
         const html = String(document.source);
         if (!html.includes('<div id="root"></div>')) throw new Error('Missing homepage render target');
-        document.source = html.replace('<div id="root"></div>', `<div id="root">${markup}</div>`);
+        for (const [page, slug, title] of [['home', '', ''], ['contact', 'contact', 'Contacto'], ['project', 'start-project', 'Comienza un proyecto']] as const) {
+          const markup = renderToString(createElement(Home, {assetBase: config.base, page}));
+          let output = html.replace('<div id="root"></div>', `<div id="root">${markup}</div>`);
+          if (!slug) { document.source = output; continue; }
+          output = output.replace(/<title>[^<]*<\/title>/, `<title>${title} | Adelvio</title>`)
+            .replace(/(<meta (?:property="og:title"|name="twitter:title") content=")[^"]*(")/g, `$1${title} | Adelvio$2`)
+            .replace(/(<link rel="canonical" href=")([^"]+)(")/, `$1$2${slug}/$3`)
+            .replace(/(<meta property="og:url" content=")([^"]+)(")/, `$1$2${slug}/$3`);
+          this.emitFile({type: 'asset', fileName: `${slug}/index.html`, source: output});
+        }
       } finally {
         await renderer.close();
       }

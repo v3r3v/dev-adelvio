@@ -5,15 +5,12 @@ import { advanceHeader, type HeaderScroll } from "./headerScroll";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { useLanguage } from "../i18n/LanguageProvider";
+import { useSiteLinks } from "./siteLinks";
 
-const links = [
-  ["#work", "The work"],
-  ["#packages", "Packages"],
-  ["#about", "The studio"],
-] as const;
-
-export function SiteHeader({ assetBase }: { assetBase: string }) {
+export function SiteHeader({ assetBase, page = "home" }: { assetBase: string; page?: "home" | "contact" | "project" }) {
   const { language, setLanguage, t } = useLanguage();
+  const routes = useSiteLinks(assetBase);
+  const links = [[routes.work, "The work"], [routes.contact, "Contact"]] as const;
   const [menuOpen, setMenuOpen] = useState(false);
   const ref = useRef<HTMLElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -47,22 +44,20 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
     syncFocus();
     let frame = 0;
     let maximum = 1;
-    let timer = 0;
-    let motion: HeaderScroll = { y: Math.max(0, window.scrollY), compact: false, hidden: false, travel: 0, visibleSince: performance.now() };
+    let height = 88;
+    let motion: HeaderScroll = { y: Math.max(0, window.scrollY), closed: 0 };
     const update = () => {
       frame = 0;
-      const result = advanceHeader(motion, window.scrollY, maximum, performance.now());
-      motion = result.state;
-      header.dataset.compact = String(motion.compact);
-      header.dataset.hidden = String(motion.hidden);
-      window.clearTimeout(timer);
-      // One cancellable wake-up lets the floating state breathe even on a fast fling.
-      if (result.wakeAfter) timer = window.setTimeout(schedule, result.wakeAfter);
+      motion = advanceHeader(motion, window.scrollY, maximum, height);
+      header.dataset.compact = String(motion.y > 52);
+      header.dataset.hidden = String(motion.closed >= height);
+      header.style.setProperty("--nav-close", `${motion.closed}px`);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
     const measure = () => {
+      height = header.offsetHeight;
       maximum = Math.max(
         1,
         document.documentElement.scrollHeight - window.innerHeight,
@@ -76,7 +71,6 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
     measure();
     return () => {
       cancelAnimationFrame(frame);
-      window.clearTimeout(timer);
       resize.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", measure);
@@ -87,6 +81,7 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
       delete header.dataset.keyboardFocus;
       delete header.dataset.material;
       delete header.dataset.hidden;
+      header.style.removeProperty("--nav-close");
     };
   }, []);
   useEffect(() => {
@@ -117,7 +112,7 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
       <div className="header-shell">
         <a
           className="wordmark"
-          href="#main"
+          href={routes.home}
           aria-label={t("Adelvio, home")}
           onClick={() => setMenuOpen(false)}
         >
@@ -125,11 +120,11 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
         </a>
         <nav className="desktop-navigation" aria-label={t("Main navigation")}>
           {links.map(([href, label]) => (
-            <a href={href} key={href}>
+            <a href={href} key={href} aria-current={page === "contact" && href === routes.contact ? "page" : undefined}>
               {t(label)}
             </a>
           ))}
-          <a className="small-cta" href="#project">
+          <a className="small-cta" href={routes.project} aria-current={page === "project" ? "page" : undefined}>
             {t("Start a project")}{" "}
             <span aria-hidden="true">
               <Icon />
@@ -181,7 +176,7 @@ export function SiteHeader({ assetBase }: { assetBase: string }) {
           hidden={!menuOpen}
           aria-label={t("Mobile navigation")}
         >
-          {[...links, ["#project", "Start a project"]].map(([href, label]) => (
+          {[...links, [routes.project, "Start a project"]].map(([href, label]) => (
             <a href={href} key={href} onClick={() => setMenuOpen(false)}>
               {t(label)}
               <Icon />

@@ -53,7 +53,7 @@ const LanguageContext = createContext({
     translate("es", source, values),
 });
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider({ children, page = "home" }: { children: ReactNode; page?: "home" | "contact" | "project" }) {
   const language = useSyncExternalStore(
     subscribe,
     snapshot,
@@ -70,8 +70,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
   useEffect(() => {
     document.documentElement.lang = language;
-    const title =
-      language === "es"
+    const title = page === "contact" ? (language === "es" ? "Contacto | Adelvio" : "Contact | Adelvio") : page === "project" ? (language === "es" ? "Comienza un proyecto | Adelvio" : "Start a project | Adelvio") : language === "es"
         ? "Adelvio | Estudio digital independiente en Puerto Rico"
         : "Adelvio | Independent digital studio in Puerto Rico";
     const description =
@@ -90,7 +89,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       'meta[name="twitter:title"]',
     ])
       document.querySelector(selector)?.setAttribute("content", title);
-  }, [language]);
+  }, [language, page]);
   return (
     <LanguageContext.Provider value={value}>
       {children}

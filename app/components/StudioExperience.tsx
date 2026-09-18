@@ -3,6 +3,7 @@
 import { useLanguage } from "../i18n/LanguageProvider";
 import { Icon } from "./Icon";
 import { useState } from "react";
+import { useSiteLinks } from "./siteLinks";
 export function Symbol({
   assetBase,
   className = "",
@@ -98,6 +99,7 @@ export function ProductWindow({ assetBase }: { assetBase: string }) {
 
 export function StudioHero({ assetBase }: { assetBase: string }) {
   const { t } = useLanguage();
+  const links = useSiteLinks(assetBase);
   return (
     <section className="studio-hero" aria-labelledby="hero-title">
       <div className="wrap hero-editorial">
@@ -115,7 +117,7 @@ export function StudioHero({ assetBase }: { assetBase: string }) {
           <div className="hero-intro">
             <p>{t("Websites and digital experiences, designed around your business.")}</p>
             <div className="hero-actions">
-            <a className="button blue" href="#project">{t("Tell me about your business")} <Icon /></a>
+            <a className="button blue" href={links.project}>{t("Start a project")} <Icon /></a>
             <a className="text-link" href="#work">
               {t("Explore the work")}{" "}
               <span aria-hidden="true">
@@ -170,16 +172,14 @@ const chapters = [
     title: "A first impression.\nA lasting connection.",
     body: "A distinctive website that makes your services clear and your business easy to contact.",
     detail: "WEBSITE DESIGN & DEVELOPMENT",
-    link: "Explore website packages",
-    href: "#packages",
+    link: "Discuss your idea",
   },
   {
     label: "Make the next step easy",
     title: "Less friction.\nMore connection.",
     body: "Turn interest into a clear next step with contact paths and supported booking tools.",
     detail: "CONTACT FLOWS & BOOKING SETUP",
-    link: "Explore Appointments",
-    href: "#package-appointments",
+    link: "Discuss your idea",
   },
   {
     label: "Think beyond the page",
@@ -187,12 +187,12 @@ const chapters = [
     body: "Need an online store, connected workflow or custom tool? Let’s define a separate scope around your idea.",
     detail: "CUSTOM APPLICATIONS & INTEGRATIONS / SEPARATE SCOPE",
     link: "Discuss your idea",
-    href: "mailto:jose.rodriguez.velez@gmail.com?subject=Adelvio%20%E2%80%94%20Custom%20project%20inquiry",
   },
 ];
 
 export function SystemStory({ assetBase }: { assetBase: string }) {
   const { t } = useLanguage();
+  const links = useSiteLinks(assetBase);
   const [stage, setStage] = useState(0);
   const current = chapters[stage];
   function choose(index: number) { setStage(index); }
@@ -225,7 +225,7 @@ export function SystemStory({ assetBase }: { assetBase: string }) {
                 </h2>
                 <p>{t(current.body)}</p>
 
-                <a className="text-link" href={current.href.startsWith('mailto:') ? 'mailto:jose.rodriguez.velez@gmail.com?subject='+encodeURIComponent('Adelvio — '+t('Custom project inquiry')) : current.href}>
+                <a className="text-link" href={links.project}>
                   {t(current.link)}
                   <span aria-hidden="true">
                     <Icon name="arrow-up-right" />
