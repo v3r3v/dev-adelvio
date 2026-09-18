@@ -1,202 +1,75 @@
 "use client";
-import { Brand } from "./Brand";
-import { ThemeToggle } from "./ThemeToggle";
-import { advanceHeader, type HeaderScroll } from "./headerScroll";
-import { useEffect, useRef, useState } from "react";
-import { Icon } from "./Icon";
-import { useLanguage } from "../i18n/LanguageProvider";
-import { useSiteLinks } from "./siteLinks";
+import {useEffect,useRef,useState} from "react";
+import {Brand} from "./Brand";
+import {ThemeToggle} from "./ThemeToggle";
+import {Icon} from "./Icon";
+import {useLanguage} from "../i18n/LanguageProvider";
+import {useSiteLinks} from "./siteLinks";
+import {advanceHeader,type HeaderScroll} from "./headerScroll";
 
-export function SiteHeader({ assetBase, page = "home" }: { assetBase: string; page?: "home" | "contact" | "project" }) {
-  const { language, setLanguage, t } = useLanguage();
-  const routes = useSiteLinks(assetBase);
-  const links = [[routes.work, "The work"], [routes.contact, "Contact"]] as const;
-  const [menuOpen, setMenuOpen] = useState(false);
-  const ref = useRef<HTMLElement>(null);
-  const toggle = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    const header = ref.current;
-    if (!header) return;
-    // Cosmetic progressive enhancement, never a capability/interaction restriction.
-    // Apple's native SwiftUI material is not a browser component.
-    const apple = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
-    const blur = CSS.supports("backdrop-filter", "blur(1px)") || CSS.supports("-webkit-backdrop-filter", "blur(1px)");
-    header.dataset.material = apple && blur ? "glass" : "solid";
-    // Clicking a button can retain DOM focus (and even :focus-visible after
-    // keyboard use). Pin navigation only while the visitor is using a keyboard.
-    let keyboard = header.matches(":has(:focus-visible)");
-    const syncFocus = () => {
-      header.dataset.keyboardFocus = String(keyboard && header.contains(document.activeElement));
+export function SiteHeader({assetBase,page="home"}: {assetBase:string;page?:"home"|"contact"|"project"}) {
+  const {language,setLanguage,t}=useLanguage();
+  const routes=useSiteLinks(assetBase);
+  const [open,setOpen]=useState(false);
+  const [collapsed,setCollapsed]=useState(false);
+  const header=useRef<HTMLElement>(null), panel=useRef<HTMLElement>(null), topbar=useRef<HTMLDivElement>(null), brand=useRef<HTMLButtonElement>(null);
+  const openRef=useRef(false);
+  const changeOpen=(value:boolean,returnFocus=false)=>{openRef.current=value;setOpen(value);if(returnFocus)brand.current?.focus({preventScroll:true});};
+  const hidden=open||collapsed;
+  const links=[[routes.work,"The work"],[routes.contact,"Contact"],[routes.project,"Your project"]] as const;
+  useEffect(()=>{
+    const el=header.current;if(!el)return;
+    let frame=0,maximum=1,keyboard=false;
+    let motion:HeaderScroll={y:Math.max(0,scrollY),travel:0,hidden:false};
+    const update=()=>{
+      frame=0;
+      el.dataset.floating=String(scrollY>32);
+      if(openRef.current||(keyboard&&topbar.current?.contains(document.activeElement))){motion={...motion,y:scrollY,travel:0};return;}
+      motion=advanceHeader(motion,scrollY,maximum);setCollapsed(motion.hidden);
     };
-    const pointer = (event: PointerEvent) => {
-      // Switching from keyboard to pointer must not move the clicked control
-      // between pointerdown and click. New downward travel can hide it again.
-      if (event.target instanceof Node && header.contains(event.target) &&
-          (keyboard || header.querySelector(".header-controls")?.contains(event.target))) {
-        motion = { ...motion, hidden: false, travel: 0 };
-        header.dataset.hidden = "false";
-      }
-      keyboard = false;
-      syncFocus();
+    const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};
+    const measure=()=>{
+      const edge=innerWidth<=620?16:26;
+      const origin=innerWidth<=620?16:parseFloat(getComputedStyle(el).left)-el.offsetWidth/2;
+      el.style.setProperty("--dock-x",`${edge-origin}px`);
+      maximum=Math.max(0,document.documentElement.scrollHeight-innerHeight);schedule();
+      panel.current?.style.setProperty("--menu-page-y",`${scrollY}px`);
     };
-    const key = (event: KeyboardEvent) => {
-      if (["Shift", "Control", "Alt", "Meta"].includes(event.key)) return;
-      keyboard = true;
-      syncFocus();
+    const pointer=(event:PointerEvent)=>{
+      keyboard=false;
+      if(topbar.current?.contains(event.target as Node)){motion={...motion,hidden:false,travel:0};setCollapsed(false);}
+      if(openRef.current&&!panel.current?.contains(event.target as Node)&&!brand.current?.contains(event.target as Node)){openRef.current=false;setOpen(false);}
     };
-    const focusOut = (event: FocusEvent) => {
-      header.dataset.keyboardFocus = String(keyboard && event.relatedTarget instanceof Node && header.contains(event.relatedTarget));
+    const key=(event:KeyboardEvent)=>{
+      keyboard=true;
+      if(event.key==="Escape"&&openRef.current){openRef.current=false;setOpen(false);brand.current?.focus({preventScroll:true});}
     };
-    document.addEventListener("pointerdown", pointer, true);
-    document.addEventListener("keydown", key, true);
-    header.addEventListener("focusin", syncFocus);
-    header.addEventListener("focusout", focusOut);
-    syncFocus();
-    let frame = 0;
-    let maximum = 1;
-    let motion: HeaderScroll = { y: Math.max(0, window.scrollY), travel: 0, hidden: false };
-    const update = () => {
-      frame = 0;
-      motion = advanceHeader(motion, window.scrollY, maximum);
-      header.dataset.compact = String(motion.y > 52);
-      header.dataset.hidden = String(motion.hidden);
-    };
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    const measure = () => {
-      // Dock the brand near the viewport edge without changing layout or
-      // reading geometry in the scroll handler. Small screens retain their gutter.
-      const edge = window.innerWidth <= 760 ? 20 : 32;
-      header.style.setProperty("--brand-dock-x", `${Math.min(0, edge - header.getBoundingClientRect().left)}px`);
-      maximum = Math.max(
-        1,
-        document.documentElement.scrollHeight - window.innerHeight,
-      );
-      schedule();
-    };
-    const resize = new ResizeObserver(measure);
-    resize.observe(document.body);
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", measure);
+    const resize=new ResizeObserver(measure);resize.observe(document.body);
+    window.addEventListener("scroll",schedule,{passive:true});window.addEventListener("resize",measure);
+    document.addEventListener("pointerdown",pointer,true);document.addEventListener("keydown",key);
     measure();
-    return () => {
-      cancelAnimationFrame(frame);
-      resize.disconnect();
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", measure);
-      document.removeEventListener("pointerdown", pointer, true);
-      document.removeEventListener("keydown", key, true);
-      header.removeEventListener("focusin", syncFocus);
-      header.removeEventListener("focusout", focusOut);
-      delete header.dataset.keyboardFocus;
-      delete header.dataset.material;
-      delete header.dataset.hidden;
-      header.style.removeProperty("--brand-dock-x");
-    };
-  }, []);
-  useEffect(() => {
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && menuOpen) {
-        setMenuOpen(false);
-        toggle.current?.focus();
-      }
-    };
-    const outside = (event: PointerEvent) => {
-      if (!ref.current?.contains(event.target as Node)) setMenuOpen(false);
-    };
-    const wide = matchMedia("(min-width: 1101px)");
-    const resize = () => {
-      if (wide.matches) setMenuOpen(false);
-    };
-    document.addEventListener("keydown", close);
-    document.addEventListener("pointerdown", outside);
-    wide.addEventListener("change", resize);
-    return () => {
-      document.removeEventListener("keydown", close);
-      document.removeEventListener("pointerdown", outside);
-      wide.removeEventListener("change", resize);
-    };
-  }, [menuOpen]);
-  return (
-    <header ref={ref} className="site-header wrap" data-menu-open={menuOpen}>
-      <div className="header-shell">
-        <a
-          className="wordmark header-brand"
-          href={routes.home}
-          aria-label={t("Adelvio, home")}
-          onClick={() => setMenuOpen(false)}
-        >
-          <Brand assetBase={assetBase} />
-        </a>
-        <div className="header-controls">
-        <nav className="desktop-navigation" aria-label={t("Main navigation")}>
-          {links.map(([href, label]) => (
-            <a href={href} key={href} aria-current={page === "contact" && href === routes.contact ? "page" : undefined}>
-              {t(label)}
-            </a>
-          ))}
-          <a className="small-cta" href={routes.project} aria-current={page === "project" ? "page" : undefined}>
-            {t("Start a project")}{" "}
-            <span aria-hidden="true">
-              <Icon />
-            </span>
-          </a>
-        </nav>
-        <div className="header-tools">
-          <ThemeToggle />
-          <div
-            className="language-switch"
-            role="group"
-            aria-label="Idioma / Language"
-          >
-            <button
-              type="button"
-              lang="es"
-              aria-label="Cambiar a español"
-              aria-pressed={language === "es"}
-              onClick={() => setLanguage("es")}
-            >
-              ES
-            </button>
-            <button
-              type="button"
-              lang="en"
-              aria-label="Switch to English"
-              aria-pressed={language === "en"}
-              onClick={() => setLanguage("en")}
-            >
-              EN
-            </button>
-          </div>
-          <button
-            ref={toggle}
-            type="button"
-            className="menu-toggle"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-nav"
-            aria-label={t(menuOpen ? "Close" : "Menu")}
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <span>{t(menuOpen ? "Close" : "Menu")}</span>
-            <Icon name={menuOpen ? "minus" : "plus"} />
-          </button>
-        </div>
-        </div>
-        <nav
-          id="mobile-nav"
-          className="mobile-nav"
-          hidden={!menuOpen}
-          aria-label={t("Mobile navigation")}
-        >
-          {[...links, [routes.project, "Start a project"]].map(([href, label]) => (
-            <a href={href} key={href} onClick={() => setMenuOpen(false)}>
-              {t(label)}
-              <Icon />
-            </a>
-          ))}
-        </nav>
+    return()=>{cancelAnimationFrame(frame);resize.disconnect();window.removeEventListener("scroll",schedule);window.removeEventListener("resize",measure);document.removeEventListener("pointerdown",pointer,true);document.removeEventListener("keydown",key);};
+  },[]);
+  useEffect(()=>{
+    if(!open)return;
+    panel.current?.style.setProperty("--menu-page-y",`${scrollY}px`);
+    const frame=requestAnimationFrame(()=>panel.current?.querySelector<HTMLAnchorElement>(".ap-links a")?.focus({preventScroll:true}));
+    return()=>cancelAnimationFrame(frame);
+  },[open]);
+  const tools=<><ThemeToggle/><button type="button" className="ap-language" lang={language==="es"?"en":"es"} aria-label={language==="es"?"Switch to English":"Cambiar a español"} onClick={()=>setLanguage(language==="es"?"en":"es")}>{language==="es"?"EN":"ES"}</button></>;
+  return <>
+    <header ref={header} className="aperture-header" data-collapsed={hidden} data-open={open} data-home={page==="home"} aria-label="Adelvio">
+      <button ref={brand} type="button" className="ap-brand" aria-label={t(open?"Close navigation":"Open navigation")} aria-expanded={open} aria-controls="aperture-menu" onClick={()=>changeOpen(!open)}><Brand assetBase={assetBase}/></button>
+      <div className="ap-topbar" ref={topbar} inert={hidden}>
+        <nav className="ap-desktop" aria-label={t("Main navigation")}><a href={routes.work}>{t("The work")}</a><a href={routes.contact} aria-current={page==="contact"?"page":undefined}>{t("Contact")}</a><a className="ap-project" href={routes.project} aria-current={page==="project"?"page":undefined}>{t("Start a project")} <Icon/></a></nav>
+        <div className="ap-tools">{tools}</div>
       </div>
     </header>
-  );
+    <nav id="aperture-menu" ref={panel} className="ap-panel" data-open={open} inert={!open} aria-label={t("Expanded navigation")} onBlur={event=>{const next=event.relatedTarget;if(next instanceof Node&&!event.currentTarget.contains(next)&&!brand.current?.contains(next))changeOpen(false);}}
+      onKeyDown={event=>{const items=[...event.currentTarget.querySelectorAll<HTMLAnchorElement>(".ap-links a")];const index=items.indexOf(document.activeElement as HTMLAnchorElement);if(index<0)return;const next=event.key==="ArrowDown"?(index+1)%3:event.key==="ArrowUp"?(index+2)%3:event.key==="Home"?0:event.key==="End"?2:null;if(next!==null){event.preventDefault();items[next].focus({preventScroll:innerHeight>300});}}}>
+      <div className="ap-panel-top"><span>{t("Where shall we go?")}</span><button type="button" className="ap-close" aria-label={t("Close navigation")} onClick={()=>changeOpen(false,true)}><Icon name="close"/></button></div>
+      <div className="ap-links">{links.map(([href,label],i)=><a key={label} href={href} onClick={()=>changeOpen(false)} aria-current={i===1&&page==="contact"||i===2&&page==="project"?"page":undefined}><span>{t(label)}</span><Icon/></a>)}</div>
+      <div className="ap-panel-bottom"><a href={routes.home} onClick={()=>changeOpen(false)} aria-label={t("Adelvio, home")}>Adelvio / Puerto Rico</a><div className="ap-tools">{tools}</div></div>
+    </nav>
+  </>;
 }

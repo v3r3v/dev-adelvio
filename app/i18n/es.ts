@@ -1,4 +1,6 @@
+import { fusionSpanish } from './fusion-es';
 export const spanish: Record<string, string> = {
+  ...fusionSpanish,
   "Contact": "Contacto",
   "Footer navigation": "Navegación del pie de página",
   "Independent digital studio": "Estudio digital independiente",

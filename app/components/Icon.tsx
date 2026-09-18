@@ -1,5 +1,7 @@
 /** Font-independent UI artwork. Keep these paths consistent with docs/icons.md. */
 const paths = {
+  "chevron-left": "m14 5-7 7 7 7",
+  "chevron-right": "m10 5 7 7-7 7",
   message: "M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6 4V6a2 2 0 0 1 2-2Zm2 5h10M7 13h6",
   sun: "M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5",
   moon: "M20.5 13.2A8.7 8.7 0 0 1 10.8 3.5a8.7 8.7 0 1 0 9.7 9.7Z",

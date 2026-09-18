@@ -11,6 +11,8 @@ import '../app/canvas.css';
 import '../app/theme.css';
 import '../app/calm.css';
 import '../app/public-pages.css';
+import '../app/fusion-home.css';
+import '../app/integrated-chrome.css';
 
 const root = document.getElementById('root')!;
 const path = window.location.pathname.replace(/\/$/, '');

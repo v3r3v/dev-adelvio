@@ -9,6 +9,8 @@ import './canvas.css';
 import './theme.css';
 import './calm.css';
 import './public-pages.css';
+import './fusion-home.css';
+import './integrated-chrome.css';
 
 
 export const metadata: Metadata = {

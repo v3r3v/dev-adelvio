@@ -29,3 +29,16 @@ test('quote route has usable fields, email validation and no GET fallback', () =
   assert.match(project, /href="[^"]*start-project\//);
   assert.match(contact, /rel="canonical" href="[^"]*contact\//);
 });
+
+test('accepted concepts use real routes, truthful labels and keyboard-ready controls', () => {
+  assert.match(home, /class="fusion-home"/);
+  assert.match(home, /class="aperture-header"/);
+  assert.match(home, /data-design="gota"/);
+  assert.match(home, /aria-controls="aperture-menu"/);
+  assert.match(home, /id="aperture-menu"[^>]*inert=""/);
+  assert.match(home, /role="region" aria-roledescription="Carrusel"/);
+  assert.match(home, /Conceptos de diseño originales, no proyectos realizados para clientes/);
+  const quote = home.match(/<a[^>]*data-design="gota"[^>]*>/)?.[0];
+  assert.match(quote, /href="[^\"]*start-project\/\?lang=es"/);
+  for (const html of [home,contact,project]) assert.doesNotMatch(html, /localhost|127\.0\.0\.1|lab-tools|lab-controls/);
+});

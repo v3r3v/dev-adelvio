@@ -8,6 +8,7 @@ try {
   const { resolveLanguage, translate } = await server.ssrLoadModule('/app/i18n/language.ts');
   const { spanish } = await server.ssrLoadModule('/app/i18n/es.ts');
   const { packages, carePlans, extras, questions } = await server.ssrLoadModule('/app/offerings.ts');
+  const { fusionServices } = await server.ssrLoadModule('/app/components/FusionHome.tsx');
   for (const [query, saved, browser, expected] of [
     [null, null, [], 'es'],
     [null, null, ['fr-FR'], 'es'],
@@ -22,6 +23,8 @@ try {
   ]) assert.equal(resolveLanguage(query, saved, browser), expected);
 
   const requireTranslation = (text) => assert.ok(Object.hasOwn(spanish, text), `Missing Spanish translation: ${text}`);
+  fusionServices.forEach(service => Object.values(service).forEach(requireTranslation));
+  ['Editorial', 'Commerce', 'Expressive', 'The work', 'Contact', 'Your project'].forEach(requireTranslation);
   for (const pkg of packages) {
     [pkg.name, pkg.description, pkg.tag, ...pkg.features].forEach(requireTranslation);
     assert.equal(translate('en', pkg.description), pkg.description);
@@ -39,7 +42,7 @@ try {
     }
   }
   // Every literal translation call must be backed by the dictionary.
-  for (const file of ['app/page.tsx', 'app/components/SiteHeader.tsx', 'app/components/ThemeToggle.tsx', 'app/components/StudioExperience.tsx', 'app/components/StudioRefinements.tsx', 'app/components/WorkViewControl.tsx', 'app/components/InquiryPage.tsx', 'app/components/ContactPage.tsx', 'app/components/QuoteBubble.tsx']) {
+  for (const file of ['app/page.tsx', 'app/components/FusionHome.tsx', 'app/components/SiteHeader.tsx', 'app/components/ThemeToggle.tsx', 'app/components/StudioExperience.tsx', 'app/components/StudioRefinements.tsx', 'app/components/WorkViewControl.tsx', 'app/components/InquiryPage.tsx', 'app/components/ContactPage.tsx', 'app/components/QuoteBubble.tsx']) {
     const ast = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
     function visit(node) {
       if (ts.isCallExpression(node) && node.expression.getText(ast) === 't') checkTranslationArgument(node.arguments[0]);
